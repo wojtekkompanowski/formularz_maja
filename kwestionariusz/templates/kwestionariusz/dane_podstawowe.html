@@ -1,0 +1,36 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Dane podstawowe{% endblock %}
+
+{% block content %}
+
+<div class="progress">
+    Krok 1 z 6 — Dane podstawowe
+</div>
+
+<h1>Dane podstawowe</h1>
+
+<p class="subtitle">
+    Kod pacjenta: <strong>{{ kod_pacjenta }}</strong>
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="question">
+            <p>{{ field.label }}</p>
+            {{ field }}
+
+            {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">
+        Dalej →
+    </button>
+</form>
+
+{% endblock %}

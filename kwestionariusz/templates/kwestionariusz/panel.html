@@ -1,0 +1,236 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Panel Mai{% endblock %}
+{% block card_class %}card-panel{% endblock %}
+
+{% block content %}
+
+<div class="progress">Panel Mai / dane pacjentów</div>
+
+<div class="panel-header">
+    <div>
+        <h1>Panel wyników pacjentów</h1>
+        <p class="subtitle">
+            Zebrane dane, wyniki kwestionariuszy, filtry i statystyki w jednym miejscu.
+        </p>
+    </div>
+
+    <a class="btn-secondary" href="{% url 'start' %}">Nowe badanie</a>
+</div>
+
+<div class="stats-grid">
+    {% for stat in stats %}
+        <div class="stat-card">
+            <span>{{ stat.label }}</span>
+            <strong>{{ stat.value }}</strong>
+            <p class="panel-note">{{ stat.note }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+<form method="get" class="filters-box">
+    <div>
+        <label for="{{ filter_form.q.id_for_label }}">{{ filter_form.q.label }}</label>
+        {{ filter_form.q }}
+    </div>
+    <div>
+        <label for="{{ filter_form.od.id_for_label }}">{{ filter_form.od.label }}</label>
+        {{ filter_form.od }}
+    </div>
+    <div>
+        <label for="{{ filter_form.do.id_for_label }}">{{ filter_form.do.label }}</label>
+        {{ filter_form.do }}
+    </div>
+    <div>
+        <label for="{{ filter_form.etap.id_for_label }}">{{ filter_form.etap.label }}</label>
+        {{ filter_form.etap }}
+    </div>
+    <div>
+        <label for="{{ filter_form.plec.id_for_label }}">{{ filter_form.plec.label }}</label>
+        {{ filter_form.plec }}
+    </div>
+    <div>
+        <label for="{{ filter_form.operacja.id_for_label }}">{{ filter_form.operacja.label }}</label>
+        {{ filter_form.operacja }}
+    </div>
+    <div>
+        <label for="{{ filter_form.cpap.id_for_label }}">{{ filter_form.cpap.label }}</label>
+        {{ filter_form.cpap }}
+    </div>
+    <div>
+        <label for="{{ filter_form.palenie.id_for_label }}">{{ filter_form.palenie.label }}</label>
+        {{ filter_form.palenie }}
+    </div>
+    <div>
+        <label for="{{ filter_form.epworth.id_for_label }}">{{ filter_form.epworth.label }}</label>
+        {{ filter_form.epworth }}
+    </div>
+    <div>
+        <label for="{{ filter_form.ipaq.id_for_label }}">{{ filter_form.ipaq.label }}</label>
+        {{ filter_form.ipaq }}
+    </div>
+    <div>
+        <label for="{{ filter_form.psqi.id_for_label }}">{{ filter_form.psqi.label }}</label>
+        {{ filter_form.psqi }}
+    </div>
+    <div>
+        <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
+        {{ filter_form.status }}
+    </div>
+    <div>
+        <label for="{{ filter_form.sort.id_for_label }}">{{ filter_form.sort.label }}</label>
+        {{ filter_form.sort }}
+    </div>
+    <div class="filter-actions">
+        <button class="btn" type="submit">Zastosuj</button>
+        <a class="btn-secondary" href="{% url 'panel' %}">Wyczyść</a>
+    </div>
+</form>
+
+{% if filter_form.errors %}
+    <p class="filters-summary">Sprawdź poprawność filtrów, jeśli któreś pole zostało odrzucone.</p>
+{% else %}
+    <p class="filters-summary">Wyświetlone badania: <strong>{{ records|length }}</strong>.</p>
+{% endif %}
+
+<div class="chart-grid">
+    {% for chart in charts %}
+        <div class="chart-card">
+            <h3>{{ chart.title }}</h3>
+            {% for item in chart.items %}
+                <div class="chart-row">
+                    <div class="chart-label">{{ item.label }}</div>
+                    <div class="chart-track">
+                        <div class="chart-fill" style="width: {{ item.width }}%;"></div>
+                    </div>
+                    <div class="chart-count">{{ item.count }}</div>
+                </div>
+            {% empty %}
+                <p class="muted">Brak danych do wykresu.</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+<div class="table-wrap">
+    <table class="results-table panel-table">
+        <thead>
+            <tr>
+                <th>Kod</th>
+                <th>Data</th>
+                <th>Etap</th>
+                <th>Płeć</th>
+                <th>Wiek</th>
+                <th>BMI</th>
+                <th>Operacja</th>
+                <th>CPAP</th>
+                <th>Choroby</th>
+                <th>Epworth</th>
+                <th>IPAQ</th>
+                <th>PSQI</th>
+                <th>Status</th>
+                <th>Akcja</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for badanie in records %}
+                <tr>
+                    <td><strong>{{ badanie.kod }}</strong></td>
+                    <td>{{ badanie.data_badania|date:"d.m.Y H:i" }}</td>
+                    <td>{{ badanie.etap }}</td>
+                    <td>{{ badanie.plec }}</td>
+                    <td>{{ badanie.wiek_display }}</td>
+                    <td>{{ badanie.bmi }}</td>
+                    <td>
+                        <span class="badge badge--info">{{ badanie.operacja_bariatryczna }}</span>
+                    </td>
+                    <td>
+                        <span class="badge">{{ badanie.cpap }}</span>
+                    </td>
+                    <td>
+                        {% if badanie.choroby %}
+                            <div class="row-tags">
+                                {% for choroba in badanie.choroby %}
+                                    <span class="tag">{{ choroba }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="row-summary">
+                            <strong>{{ badanie.epworth_score_display }}</strong>
+                            <span class="muted">{{ badanie.epworth_interpretacja }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="row-summary">
+                            <strong>{{ badanie.ipaq_score_display }}</strong>
+                            <span class="muted">{{ badanie.ipaq_kategoria }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="row-summary">
+                            <strong>{{ badanie.pittsburgh_score_display }}</strong>
+                            <span class="muted">{{ badanie.pittsburgh_status }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {{ badanie.status_class }}">{{ badanie.status_label }}</span>
+                    </td>
+                    <td>
+                        <a class="link-btn" href="{% url 'szczegoly_badania' badanie.id %}">Szczegóły</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14">
+                        <details class="record-details">
+                            <summary>Pokaż pełne dane</summary>
+                            <div class="detail-sections">
+                                {% for section in badanie.sections %}
+                                    <div class="detail-section-card">
+                                        <h4>{{ section.title }}</h4>
+                                        {% if section.meta %}
+                                            <div class="detail-meta">{{ section.meta }}</div>
+                                        {% endif %}
+                                        {% if section.summary %}
+                                            <div class="summary-chips">
+                                                <div class="summary-chip">
+                                                    <span>Podsumowanie</span>
+                                                    {{ section.summary }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="field-list">
+                                            {% for item in section.items %}
+                                                <div class="field-row">
+                                                    <div class="field-label">{{ item.label }}</div>
+                                                    <div class="field-value{% if item.is_list %} is-list{% endif %}">
+                                                        {% if item.is_list %}
+                                                            {% for tag in item.value %}
+                                                                <span class="tag">{{ tag }}</span>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            {{ item.value }}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="14">Brak wyników dla wybranych filtrów.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

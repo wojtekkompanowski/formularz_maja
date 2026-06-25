@@ -1,0 +1,40 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Kwestionariusz Jakości Snu Pittsburgh{% endblock %}
+
+{% block content %}
+
+<div class="progress">
+    Krok 3 z 3 — Pittsburgh
+</div>
+
+<h1>Kwestionariusz Jakości Snu Pittsburgh</h1>
+
+<p class="subtitle">
+    Kod pacjenta: <strong>{{ kod_pacjenta }}</strong>
+</p>
+
+<p class="subtitle">
+    Pytania dotyczą jakości snu w ciągu ostatniego miesiąca.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="question">
+            <p>{{ field.label }}</p>
+            {{ field }}
+
+            {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">
+        Zakończ badanie
+    </button>
+</form>
+
+{% endblock %}

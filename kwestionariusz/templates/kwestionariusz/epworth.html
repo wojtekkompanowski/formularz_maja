@@ -1,0 +1,41 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Skala Senności Epworth{% endblock %}
+
+{% block content %}
+
+<div class="progress">
+    Krok 1 z 3 — Skala Senności Epworth
+</div>
+
+<h1>Skala Senności Epworth</h1>
+
+<p class="subtitle">
+    Kod pacjenta: <strong>{{ kod_pacjenta }}</strong>
+</p>
+
+<p class="subtitle">
+    Proszę określić, jak duże było w ostatnim czasie prawdopodobieństwo
+    zaśnięcia w wymienionych poniżej sytuacjach, w odróżnieniu od uczucia
+    ogólnego zmęczenia. Jeśli nie wykonywałeś/aś tych czynności w ostatnim
+    czasie, proszę je sobie wyobrazić.
+</p>
+
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="question">
+            <p>{{ field.label }}</p>
+            {{ field }}
+        </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">
+        Dalej →
+    </button>
+
+</form>
+
+{% endblock %}

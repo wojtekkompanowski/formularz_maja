@@ -1,0 +1,72 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Szczegóły badania{% endblock %}
+{% block card_class %}card-panel{% endblock %}
+
+{% block content %}
+
+<div class="progress">Panel Mai / szczegóły badania</div>
+
+<div class="panel-header">
+    <div>
+        <h1>Szczegóły badania</h1>
+        <p class="subtitle">
+            Pacjent: <strong>{{ badanie.kod }}</strong> · Data badania:
+            <strong>{{ badanie.data_badania|date:"d.m.Y H:i" }}</strong>
+        </p>
+    </div>
+
+    <a class="btn-secondary" href="{% url 'panel' %}">← Wróć do panelu</a>
+</div>
+
+<div class="summary-chips">
+    <div class="summary-chip"><span>Etap</span> {{ badanie.etap }}</div>
+    <div class="summary-chip"><span>Płeć</span> {{ badanie.plec }}</div>
+    <div class="summary-chip"><span>Wiek</span> {{ badanie.wiek_display }}</div>
+    <div class="summary-chip"><span>BMI</span> {{ badanie.bmi }}</div>
+    <div class="summary-chip"><span>Epworth</span> {{ badanie.epworth_score_display }} pkt</div>
+    <div class="summary-chip"><span>IPAQ</span> {{ badanie.ipaq_score_display }} MET</div>
+    <div class="summary-chip"><span>PSQI</span> {{ badanie.pittsburgh_score_display }} pkt</div>
+    <div class="summary-chip"><span>Status</span> {{ badanie.status_label }}</div>
+</div>
+
+{% if badanie.missing_formularze %}
+    <p class="panel-note">Brakuje formularzy: {{ badanie.missing_formularze|join:", " }}</p>
+{% endif %}
+
+<div class="detail-sections">
+    {% for section in badanie.sections %}
+        <div class="detail-section-card">
+            <h4>{{ section.title }}</h4>
+            {% if section.meta %}
+                <div class="detail-meta">{{ section.meta }}</div>
+            {% endif %}
+            {% if section.summary %}
+                <div class="summary-chips">
+                    <div class="summary-chip">
+                        <span>Podsumowanie</span>
+                        {{ section.summary }}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="field-list">
+                {% for item in section.items %}
+                    <div class="field-row">
+                        <div class="field-label">{{ item.label }}</div>
+                        <div class="field-value{% if item.is_list %} is-list{% endif %}">
+                            {% if item.is_list %}
+                                {% for tag in item.value %}
+                                    <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                            {% else %}
+                                {{ item.value }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

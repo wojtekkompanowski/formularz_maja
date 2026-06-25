@@ -1,0 +1,40 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}Start badania{% endblock %}
+
+{% block content %}
+
+<div class="progress">
+    Start badania
+</div>
+
+<h1>Kwestionariusze pacjenta</h1>
+
+<p class="subtitle">
+    Wprowadź indywidualny kod pacjenta, aby rozpocząć wypełnianie trzech kwestionariuszy.
+</p>
+
+<div class="question">
+    <p>Instrukcja</p>
+    <p>
+        Kod pacjenta złożony jest z: dwóch pierwszych liter imienia matki + dwóch pierwszych
+        liter swojego imienia + dnia twojego urodzenia (np. jeśli mama to Anna, Ty to Jan, a urodziłeś/aś
+        się 5. dnia miesiące, Twój kod to: ANJA05).
+
+    </p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="question">
+        <p>{{ form.kod.label }}</p>
+        {{ form.kod }}
+    </div>
+
+    <button class="btn" type="submit">
+        Rozpocznij badanie →
+    </button>
+</form>
+
+{% endblock %}

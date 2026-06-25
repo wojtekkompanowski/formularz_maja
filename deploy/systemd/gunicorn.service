@@ -1,0 +1,16 @@
+[Unit]
+Description=Formularz Maja Gunicorn
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/formularz_maja
+EnvironmentFile=/etc/formularz_maja/formularz_maja.env
+ExecStart=/srv/formularz_maja/venv/bin/gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3 --timeout 60
+Restart=on-failure
+RestartSec=5
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+{% extends 'kwestionariusz/base.html' %}
+
+{% block title %}CPAP i zdrowie{% endblock %}
+
+{% block content %}
+
+<div class="progress">
+    Krok 3 z 6 — CPAP i zdrowie
+</div>
+
+<h1>CPAP i zdrowie</h1>
+
+<p class="subtitle">
+    Kod pacjenta: <strong>{{ kod_pacjenta }}</strong>
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="question">
+            <p>{{ field.label }}</p>
+            {{ field }}
+        </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">
+        Dalej →
+    </button>
+</form>
+
+{% endblock %}
