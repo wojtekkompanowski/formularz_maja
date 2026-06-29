@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="progress">
-    Krok 3 z 6 — CPAP i zdrowie
+    Krok 3 z 6 - CPAP i zdrowie
 </div>
 
 <h1>CPAP i zdrowie</h1>
@@ -14,49 +14,36 @@
     Kod pacjenta: <strong>{{ kod_pacjenta }}</strong>
 </p>
 
-<form method="post" id="cpap-form">
+<form method="post">
     {% csrf_token %}
 
     {% for field in form %}
-        {% if field.name == 'choroby_inne' %}
-            <div class="modal-backdrop{% if field.errors %} is-open{% endif %}" id="other-disease-modal" aria-hidden="{% if field.errors %}false{% else %}true{% endif %}">
-                <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="other-disease-title">
-                    <div class="modal-header">
-                        <div>
-                            <h2 id="other-disease-title">Inne schorzenie</h2>
-                            <p class="modal-copy">Wpisz dokładną nazwę schorzenia. Zapiszemy ją razem z odpowiedzią.</p>
-                        </div>
-                        <button type="button" class="icon-btn" data-modal-close aria-label="Zamknij okno">×</button>
-                    </div>
-
-                    <div class="question question--compact">
-                        <p>{{ field.label }}</p>
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="error">{{ field.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" class="btn-secondary" data-modal-close>Zamknij</button>
-                    </div>
-                </div>
-            </div>
-        {% elif field.name == 'choroby' %}
+        {% if field.name == 'choroby' %}
             <div class="question">
                 <p>{{ field.label }}</p>
                 <div class="checkbox-list">
                     {% for choice in field %}
-                        <label class="checkbox-option{% if choice.choice_label == 'Inne' %} js-other-disease-trigger{% endif %}">
+                        <label class="checkbox-option">
                             {{ choice.tag }}
                             <span>{{ choice.choice_label }}</span>
                         </label>
                     {% endfor %}
                 </div>
+
                 {% if field.errors %}
                     <div class="error">{{ field.errors }}</div>
                 {% endif %}
             </div>
+
+            <div class="question question--nested">
+                <p>{{ form.choroby_inne.label }}</p>
+                {{ form.choroby_inne }}
+
+                {% if form.choroby_inne.errors %}
+                    <div class="error">{{ form.choroby_inne.errors }}</div>
+                {% endif %}
+            </div>
+        {% elif field.name == 'choroby_inne' %}
         {% else %}
             <div class="question">
                 <p>{{ field.label }}</p>
@@ -70,60 +57,8 @@
     {% endfor %}
 
     <button class="btn" type="submit">
-        Dalej →
+        Dalej ->
     </button>
 </form>
-
-<script>
-(function () {
-    const modal = document.getElementById('other-disease-modal');
-    const closeButtons = modal ? modal.querySelectorAll('[data-modal-close]') : [];
-    const otherCheckboxLabel = document.querySelector('label.js-other-disease-trigger');
-    const otherCheckbox = otherCheckboxLabel ? otherCheckboxLabel.querySelector('input[type="checkbox"]') : null;
-    const otherInput = document.getElementById('{{ form.choroby_inne.id_for_label }}');
-
-    function openModal() {
-        if (!modal) return;
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-    }
-
-    function closeModal() {
-        if (!modal) return;
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-    }
-
-    if (otherCheckbox) {
-        otherCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                openModal();
-                if (otherInput) {
-                    otherInput.focus();
-                }
-            } else {
-                closeModal();
-                if (otherInput) {
-                    otherInput.value = '';
-                }
-            }
-        });
-    }
-
-    closeButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            closeModal();
-        });
-    });
-
-    if (otherCheckbox && otherCheckbox.checked) {
-        openModal();
-    }
-
-    if (modal && modal.querySelector('.error')) {
-        openModal();
-    }
-})();
-</script>
 
 {% endblock %}

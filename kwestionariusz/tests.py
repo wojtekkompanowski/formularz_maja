@@ -79,3 +79,51 @@ class FosqModelTests(TestCase):
         self.assertEqual(record["fosq_score"], 20)
         self.assertEqual(record["obwod_szyi_status"], "W normie")
         self.assertEqual(len(ctx["records"]), 1)
+
+    def test_dashboard_context_handles_choroby_lists(self):
+        pacjent = Pacjent.objects.create(kod="TEST03")
+        badanie = Badanie.objects.create(
+            pacjent=pacjent,
+            plec="kobieta",
+            choroby="nadcisnienie, inne",
+            choroby_inne="Hashimoto",
+        )
+
+        Epworth.objects.create(
+            badanie=badanie,
+            pytanie_1=0,
+            pytanie_2=0,
+            pytanie_3=0,
+            pytanie_4=0,
+            pytanie_5=0,
+            pytanie_6=0,
+            pytanie_7=0,
+            pytanie_8=0,
+        )
+
+        IPAQ.objects.create(
+            badanie=badanie,
+            szpital=False,
+            choroba=False,
+            rehabilitacja=False,
+            urlop=False,
+            rekonwalescencja=False,
+            ciaza=False,
+            intensywne_dni=0,
+            intensywne_minuty=0,
+            umiarkowane_dni=0,
+            umiarkowane_minuty=0,
+            chodzenie_dni=0,
+            chodzenie_minuty=0,
+            siedzenie_minuty_dziennie=0,
+        )
+
+        kwargs = {f"pytanie_{index}": 4 for index in range(1, 31)}
+        Pittsburgh.objects.create(badanie=badanie, **kwargs)
+
+        record = build_record_view(Badanie.objects.get(pk=badanie.pk))
+        ctx = build_dashboard_context(Badanie.objects.filter(pk=badanie.pk))
+
+        self.assertEqual(record["choroby_display"], ["Nadciśnienie tętnicze", "Inne: Hashimoto"])
+        self.assertEqual(ctx["charts"][-1]["items"][0]["label"], "Nadciśnienie tętnicze")
+        self.assertEqual(len(ctx["records"]), 1)

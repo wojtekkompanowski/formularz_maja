@@ -407,6 +407,22 @@ def _format_choice(field_name, value):
     return mapping.get(value, mapping.get(str(value), str(value)))
 
 
+def _format_choroby_list(value):
+    if value in (None, ""):
+        return []
+
+    mapping = FIELD_CHOICE_MAPS.get("choroby", {})
+    codes = [part.strip() for part in str(value).split(",") if part.strip()]
+    labels = []
+    for code in codes:
+        if code == "inne":
+            continue
+        label = mapping.get(code, code)
+        if label and label != "-":
+            labels.append(label)
+    return labels
+
+
 def _format_fosq_value(field_name, value):
     if value in (None, ""):
         return "-"
@@ -499,13 +515,10 @@ def build_record_view(badanie: Badanie):
 
     neck = classify_neck_circumference(badanie.plec, badanie.obwod_szyi)
 
-    choroby_codes = [part.strip() for part in (badanie.choroby or "").split(",") if part.strip()]
-    choroby_labels = [_format_choice("choroby", code) for code in choroby_codes if code != "inne"]
-    choroby_display = list(choroby_labels)
+    choroby_display = _format_choroby_list(badanie.choroby)
     if badanie.choroby_inne:
         choroby_display.append(f"Inne: {badanie.choroby_inne}")
-    if not choroby_display:
-        choroby_display = ["-"]
+    choroby_display = choroby_display if choroby_display else []
 
     sections = [
         _build_section(
@@ -695,8 +708,8 @@ def build_record_view(badanie: Badanie):
         "obwod_szyi_reference": neck["reference"],
         "operacja_bariatryczna": _display_value("operacja_bariatryczna", badanie.operacja_bariatryczna),
         "cpap": _display_value("cpap", badanie.cpap),
-        "choroby": choroby_display if choroby_display != ["-"] else ["-"],
-        "choroby_display": choroby_display if choroby_display != ["-"] else [],
+        "choroby": choroby_display,
+        "choroby_display": choroby_display,
         "choroby_inne": badanie.choroby_inne or "-",
         "fizjoterapia": _display_value("fizjoterapia", badanie.fizjoterapia),
         "charakter_aktywnosci": _display_value("charakter_aktywnosci", badanie.charakter_aktywnosci),
