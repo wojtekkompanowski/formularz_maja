@@ -24,11 +24,14 @@
     <div class="summary-chip"><span>Płeć</span> {{ badanie.plec }}</div>
     <div class="summary-chip"><span>Wiek</span> {{ badanie.wiek_display }}</div>
     <div class="summary-chip"><span>BMI</span> {{ badanie.bmi }}</div>
+    <div class="summary-chip"><span>Obwód szyi</span>{% if badanie.obwod_szyi != '-' %} {{ badanie.obwod_szyi }} cm{% else %} -{% endif %} · {{ badanie.obwod_szyi_status }}</div>
     <div class="summary-chip"><span>Epworth</span> {{ badanie.epworth_score_display }} pkt</div>
     <div class="summary-chip"><span>IPAQ</span> {{ badanie.ipaq_score_display }} MET</div>
-    <div class="summary-chip"><span>PSQI</span> {{ badanie.pittsburgh_score_display }} pkt</div>
+    <div class="summary-chip"><span>FOSQ</span> {{ badanie.fosq_score_display }} pkt</div>
     <div class="summary-chip"><span>Status</span> {{ badanie.status_label }}</div>
 </div>
+
+<p class="panel-note">{{ badanie.obwod_szyi_reference }}</p>
 
 {% if badanie.missing_formularze %}
     <p class="panel-note">Brakuje formularzy: {{ badanie.missing_formularze|join:", " }}</p>

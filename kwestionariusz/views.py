@@ -1,5 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import KodPacjentaForm, DanePodstawoweForm, EpworthForm, IPAQForm, PittsburghForm, OperacjaBariatrycznaForm, CPAPZdrowieForm
+from .forms import (
+    KodPacjentaForm,
+    DanePodstawoweForm,
+    EpworthForm,
+    IPAQForm,
+    PittsburghForm,
+    OperacjaBariatrycznaForm,
+    CPAPZdrowieForm,
+    FOSQ_SECTION_DEFINITIONS,
+    FOSQ_QUESTION_DEFINITIONS,
+)
 from .models import Pacjent, Badanie, Epworth, IPAQ, Pittsburgh
 from django.contrib.auth.decorators import login_required
 from .dashboard import PanelFilterForm, apply_panel_filters, build_dashboard_context, build_record_view
@@ -137,31 +147,13 @@ def pittsburgh(request):
         form = PittsburghForm(request.POST)
 
         if form.is_valid():
+            defaults = {
+                f"pytanie_{index}": int(form.cleaned_data[f"pytanie_{index}"])
+                for index in range(1, 31)
+            }
             Pittsburgh.objects.update_or_create(
                 badanie=badanie,
-                defaults={
-                    'godzina_polozenia': form.cleaned_data['godzina_polozenia'],
-                    'czas_zasypiania_minuty': form.cleaned_data['czas_zasypiania_minuty'],
-                    'godzina_wstawania': form.cleaned_data['godzina_wstawania'],
-                    'godziny_snu': form.cleaned_data['godziny_snu'],
-
-                    'nie_zasnal_30_min': int(form.cleaned_data['nie_zasnal_30_min']),
-                    'pobudka_w_nocy': int(form.cleaned_data['pobudka_w_nocy']),
-                    'toaleta': int(form.cleaned_data['toaleta']),
-                    'problemy_z_oddychaniem': int(form.cleaned_data['problemy_z_oddychaniem']),
-                    'kaszel_chrapanie': int(form.cleaned_data['kaszel_chrapanie']),
-                    'za_zimno': int(form.cleaned_data['za_zimno']),
-                    'za_cieplo': int(form.cleaned_data['za_cieplo']),
-                    'zle_sny': int(form.cleaned_data['zle_sny']),
-                    'bol': int(form.cleaned_data['bol']),
-                    'inne_powody': int(form.cleaned_data['inne_powody']),
-                    'inne_powody_opis': form.cleaned_data['inne_powody_opis'],
-
-                    'jakosc_snu': int(form.cleaned_data['jakosc_snu']),
-                    'leki_nasenne': int(form.cleaned_data['leki_nasenne']),
-                    'problemy_z_czuwaniem': int(form.cleaned_data['problemy_z_czuwaniem']),
-                    'brak_energii': int(form.cleaned_data['brak_energii']),
-                }
+                defaults=defaults,
             )
 
             return redirect('koniec')
@@ -175,6 +167,20 @@ def pittsburgh(request):
         {
             'form': form,
             'kod_pacjenta': kod_pacjenta,
+            'question_sections': [
+                {
+                    'title': section_title,
+                    'fields': [
+                        {
+                            'field': form[field_name],
+                            'label': label,
+                        }
+                        for field_name, label, _scale, _section in FOSQ_QUESTION_DEFINITIONS
+                        if field_name in field_names
+                    ],
+                }
+                for _section_key, section_title, field_names in FOSQ_SECTION_DEFINITIONS
+            ],
         }
     )
 
@@ -294,6 +300,7 @@ def cpap_zdrowie(request):
             badanie.cpap_godziny_snu = form.cleaned_data['cpap_godziny_snu']
             badanie.cpap_zmiana_cisnienia = form.cleaned_data['cpap_zmiana_cisnienia']
             badanie.choroby = ', '.join(form.cleaned_data['choroby'])
+            badanie.choroby_inne = form.cleaned_data['choroby_inne']
             badanie.fizjoterapia = form.cleaned_data['fizjoterapia']
             badanie.charakter_aktywnosci = form.cleaned_data['charakter_aktywnosci']
             badanie.alkohol_przed_snem = form.cleaned_data['alkohol_przed_snem']

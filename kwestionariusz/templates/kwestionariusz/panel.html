@@ -70,8 +70,16 @@
         {{ filter_form.ipaq }}
     </div>
     <div>
-        <label for="{{ filter_form.psqi.id_for_label }}">{{ filter_form.psqi.label }}</label>
-        {{ filter_form.psqi }}
+        <label for="{{ filter_form.fosq_min.id_for_label }}">{{ filter_form.fosq_min.label }}</label>
+        {{ filter_form.fosq_min }}
+    </div>
+    <div>
+        <label for="{{ filter_form.fosq_max.id_for_label }}">{{ filter_form.fosq_max.label }}</label>
+        {{ filter_form.fosq_max }}
+    </div>
+    <div>
+        <label for="{{ filter_form.neck_status.id_for_label }}">{{ filter_form.neck_status.label }}</label>
+        {{ filter_form.neck_status }}
     </div>
     <div>
         <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
@@ -122,12 +130,13 @@
                 <th>Płeć</th>
                 <th>Wiek</th>
                 <th>BMI</th>
+                <th>Szyja</th>
                 <th>Operacja</th>
                 <th>CPAP</th>
                 <th>Choroby</th>
                 <th>Epworth</th>
                 <th>IPAQ</th>
-                <th>PSQI</th>
+                <th>FOSQ</th>
                 <th>Status</th>
                 <th>Akcja</th>
             </tr>
@@ -142,15 +151,21 @@
                     <td>{{ badanie.wiek_display }}</td>
                     <td>{{ badanie.bmi }}</td>
                     <td>
+                        <div class="row-summary">
+                            <strong>{% if badanie.obwod_szyi != '-' %}{{ badanie.obwod_szyi }} cm{% else %}-{% endif %}</strong>
+                            <span class="badge {{ badanie.obwod_szyi_status_class }}">{{ badanie.obwod_szyi_status }}</span>
+                        </div>
+                    </td>
+                    <td>
                         <span class="badge badge--info">{{ badanie.operacja_bariatryczna }}</span>
                     </td>
                     <td>
                         <span class="badge">{{ badanie.cpap }}</span>
                     </td>
                     <td>
-                        {% if badanie.choroby %}
+                        {% if badanie.choroby_display %}
                             <div class="row-tags">
-                                {% for choroba in badanie.choroby %}
+                                {% for choroba in badanie.choroby_display %}
                                     <span class="tag">{{ choroba }}</span>
                                 {% endfor %}
                             </div>
@@ -172,8 +187,8 @@
                     </td>
                     <td>
                         <div class="row-summary">
-                            <strong>{{ badanie.pittsburgh_score_display }}</strong>
-                            <span class="muted">{{ badanie.pittsburgh_status }}</span>
+                            <strong>{{ badanie.fosq_score_display }}</strong>
+                            <span class="badge {{ badanie.fosq_status_class }}">{{ badanie.fosq_status }}</span>
                         </div>
                     </td>
                     <td>
@@ -184,7 +199,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="14">
+                    <td colspan="15">
                         <details class="record-details">
                             <summary>Pokaż pełne dane</summary>
                             <div class="detail-sections">
@@ -226,7 +241,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="14">Brak wyników dla wybranych filtrów.</td>
+                    <td colspan="15">Brak wyników dla wybranych filtrów.</td>
                 </tr>
             {% endfor %}
         </tbody>

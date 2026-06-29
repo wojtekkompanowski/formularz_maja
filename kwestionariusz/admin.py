@@ -30,5 +30,13 @@ class IPAQAdmin(admin.ModelAdmin):
 
 @admin.register(Pittsburgh)
 class PittsburghAdmin(admin.ModelAdmin):
-    list_display = ('badanie', 'wynik', 'data_wypelnienia')
+    list_display = (
+        'badanie',
+        'wynik',
+        'produktywnosc_wynik',
+        'aktywnosc_wynik',
+        'czujnosc_wynik',
+        'intymnosc_wynik',
+        'data_wypelnienia',
+    )
     search_fields = ('badanie__pacjent__kod',)
