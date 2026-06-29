@@ -37,6 +37,24 @@ h1 {
     margin-bottom: 30px;
 }
 
+.intro-banner {
+    border: 1px solid #dbeafe;
+    border-left: 5px solid #2563eb;
+    background: #f8fbff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+
+.intro-banner p {
+    margin: 0 0 10px;
+    line-height: 1.55;
+}
+
+.intro-banner p:last-child {
+    margin-bottom: 0;
+}
+
 .question {
     padding: 20px;
     border: 1px solid #e5e7eb;
